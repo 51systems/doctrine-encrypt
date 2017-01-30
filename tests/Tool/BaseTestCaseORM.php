@@ -36,14 +36,6 @@ abstract class BaseTestCaseORM extends \PHPUnit_Framework_TestCase
     protected $queryAnalyzer;
 
     /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
-    {
-
-    }
-
-    /**
      * EntityManager mock object together with
      * annotation mapping driver and pdo_sqlite
      * database in memory
