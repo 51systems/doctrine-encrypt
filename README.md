@@ -1,5 +1,4 @@
-# DoctrineEncrypt
-[![Build Status](https://travis-ci.org/51systems/doctrine-encrypt.svg?branch=master)](https://travis-ci.org/51systems/doctrine-encrypt)
+# DoctrineEncrypt [![Build Status](https://travis-ci.org/51systems/doctrine-encrypt.svg?branch=master)](https://travis-ci.org/51systems/doctrine-encrypt)
 
 Package encrypts and decrypts Doctrine fields through life cycle events. This version of the Doctrine Encrypt package
 distinguishes itself with the following features:
@@ -8,33 +7,34 @@ distinguishes itself with the following features:
 - Totally transparent field encryption: the value will only be encrypted in the database, never in the value
 - Unit testing
 
-## Installation
-Add `51systems/doctrine-encrypt` to your Composer manifest.
+## Integrations
 
-```js
-{
-    "require": {
-        "51systems/doctrine-encrypt": "~5.0"
-    }
-}
+The package supports the following integrations:
+
+- Laravel
+
+Feel free to send in a pull request to add additional integrations.
+
+## Installation
+
+```bash
+composer require 51systems/doctrine-encrypt
 ```
 
 ## Configuration
-### Using ZF2
-Check out the doctrine-encrypt-module at https://github.com/51systems/doctrine-encrypt-module
 
-### Manually
-Add the event subscriber to your entity manager's event manager. Assuming `$em` is your configured entity manager:
+### Laravel
+
+Add the subscriber in the `boot` method of a service provider.
 
 ```php
 <?php
 
-//You should pick your own hexadecimal secret
-$secret = pack("H*", "dda8e5b978e05346f08b312a8c2eac03670bb5661097f8bc13212c31be66384c");
+$encrypter = $this->app->make(\Illuminate\Contracts\Encryption\Encrypter::class);
 
 $subscriber = new DoctrineEncryptSubscriber(
     new \Doctrine\Common\Annotations\AnnotationReader,
-    new \DoctrineEncrypt\Encryptors\AES256Encryptor($secret)
+    new \DoctrineEncrypt\Encryptors\LaravelEncryptor($encrypter)
 );
 
 $eventManager = $em->getEventManager();
@@ -42,6 +42,7 @@ $eventManager->addEventSubscriber($subscriber);
 ```
 
 ## Usage
+
 ```php
 <?php
 
@@ -62,20 +63,20 @@ class Entity
      * @ORM\Column(type="integer")
      * @var int
      */
-    protected $id;
+    private $id;
 
     /**
      * @ORM\Column(type="text")
      * @Encrypted
      * @var string
      */
-    protected $secret_data;
+    private $secretData;
 }
 ```
 
 ## License
 
-This bundle is under the MIT license. See the complete license in the bundle
+This bundle is under the MIT license. See the complete license in the bundle.
 
 ## Versions
 

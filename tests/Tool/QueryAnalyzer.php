@@ -89,6 +89,7 @@ class QueryAnalyzer implements SQLLogger
         $this->queries = array();
         $this->queryExecutionTimes = array();
         $this->totalExecutionTime = 0;
+
         return $this;
     }
 
@@ -101,18 +102,23 @@ class QueryAnalyzer implements SQLLogger
     public function getOutput($dumpOnlySql = false)
     {
         $output = '';
+
         if (!$dumpOnlySql) {
             $output .= 'Platform: ' . $this->platform->getName() . PHP_EOL;
             $output .= 'Executed queries: ' . count($this->queries);
             $output .= ', total time: ' . $this->totalExecutionTime . ' ms' . PHP_EOL;
         }
+
         foreach ($this->queries as $index => $sql) {
             if (!$dumpOnlySql) {
                 $output .= 'Query(' . ($index + 1) . ') - ' . $this->queryExecutionTimes[$index] . ' ms' . PHP_EOL;
             }
+
             $output .= $sql . ';' . PHP_EOL;
         }
+
         $output .= PHP_EOL;
+
         return $output;
     }
 
@@ -125,12 +131,14 @@ class QueryAnalyzer implements SQLLogger
     {
         $index = 0;
         $slowest = 0;
+
         foreach ($this->queryExecutionTimes as $i => $time) {
             if ($time > $slowest) {
                 $slowest = $time;
                 $index = $i;
             }
         }
+
         return $index;
     }
 
@@ -184,10 +192,12 @@ class QueryAnalyzer implements SQLLogger
      */
     private function generateSql($sql, $params, $types)
     {
-        if (!count($params)) {
+        if (! count($params)) {
             return $sql;
         }
+
         $converted = $this->getConvertedParams($params, $types);
+
         if (is_int(key($params))) {
             $index = key($converted);
             $sql = preg_replace_callback('@\?@sm', function ($match) use (&$index, $converted) {
@@ -198,6 +208,7 @@ class QueryAnalyzer implements SQLLogger
                 $sql = str_replace(':' . $key, $value, $sql);
             }
         }
+
         return $sql;
     }
 
@@ -211,12 +222,15 @@ class QueryAnalyzer implements SQLLogger
     private function getConvertedParams($params, $types)
     {
         $result = array();
+
         foreach ($params as $position => $value) {
             if (isset($types[$position])) {
                 $type = $types[$position];
+
                 if (is_string($type)) {
                     $type = Type::getType($type);
                 }
+
                 if ($type instanceof Type) {
                     $value = $type->convertToDatabaseValue($value, $this->platform);
                 }
@@ -228,13 +242,16 @@ class QueryAnalyzer implements SQLLogger
                     $value = $type->convertToDatabaseValue($value, $this->platform);
                 }
             }
+
             if (is_string($value)) {
                 $value = "'{$value}'";
             } elseif (is_null($value)) {
                 $value = 'NULL';
             }
+
             $result[$position] = $value;
         }
+
         return $result;
     }
 }

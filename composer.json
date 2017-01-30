@@ -4,19 +4,23 @@
     "keywords": ["doctrine", "aes256", "encrypt", "decrypt"],
     "license": "MIT",
     "description": "Package encrypts and decrypts Doctrine fields through life cycle events.",
-
     "require": {
-        "php": ">=5.3.2",
-        "doctrine/orm": "~2.0",
-        "ext-mcrypt": "*"
+        "php": ">=7.1",
+        "doctrine/orm": "^2.5"
     },
-
     "require-dev": {
-        "phpunit/phpunit": "~3.7"
+        "illuminate/encryption": "^5.4",
+        "phpunit/phpunit": "^5.7"
     },
-
     "autoload": {
-        "psr-0": { "DoctrineEncrypt": "src" }
+        "psr-4": {
+            "DoctrineEncrypt\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "DoctrineEncrypt\\Tests\\": "tests"
+        }
     },
     "authors": [
         {
@@ -26,6 +30,14 @@
         {
             "name": "Dustin Thomson",
             "email": "dthomson@51systems.com"
+        },
+        {
+            "name": "Dries Vints",
+            "email": "dries.vints@gmail.com"
         }
-    ]
+    ],
+    "config": {
+        "preferred-install": "dist",
+        "sort-packages": true
+    }
 }

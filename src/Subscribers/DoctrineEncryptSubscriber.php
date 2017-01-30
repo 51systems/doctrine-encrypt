@@ -9,6 +9,7 @@ use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Events;
+use DoctrineEncrypt\Configuration\Encrypted;
 use DoctrineEncrypt\Encryptors\EncryptorInterface;
 
 /**
@@ -19,12 +20,12 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     /**
      * Encryptor interface namespace
      */
-    const ENCRYPTOR_INTERFACE_NS = 'DoctrineEncrypt\Encryptors\EncryptorInterface';
+    const ENCRYPTOR_INTERFACE_NS = EncryptorInterface::class;
 
     /**
      * Encrypted annotation full name
      */
-    const ENCRYPTED_ANN_NAME = 'DoctrineEncrypt\Configuration\Encrypted';
+    const ENCRYPTED_ANN_NAME = Encrypted::class;
 
     /**
      * Encryptor
@@ -60,11 +61,6 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      */
     private $postFlushDecryptQueue = array();
 
-    /**
-     * Initialization of subscriber
-     * @param Reader $annReader
-     * @param EncryptorInterface $encryptor
-     */
     public function __construct(Reader $annReader, EncryptorInterface $encryptor)
     {
         $this->annReader = $annReader;
@@ -76,8 +72,6 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      *
      * Notice that we do not recalculate changes otherwise the password will be written
      * every time (Because it is going to differ from the un-encrypted value)
-     *
-     * @param OnFlushEventArgs $args
      */
     public function onFlush(OnFlushEventArgs $args)
     {
@@ -102,13 +96,13 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      * Processes the entity for an onFlush event.
      *
      * @param object $entity
-     * @param EntityManager $em
      */
     private function entityOnFlush($entity, EntityManager $em)
     {
         $objId = spl_object_hash($entity);
 
         $fields = array();
+
         foreach ($this->getEncryptedFields($entity, $em) as $field) {
             $fields[$field->getName()] = array(
                 'field' => $field,
@@ -127,7 +121,6 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     /**
      * After we have persisted the entities, we want to have the
      * decrypted information available once more.
-     * @param PostFlushEventArgs $args
      */
     public function postFlush(PostFlushEventArgs $args)
     {
@@ -155,14 +148,13 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     /**
      * Listen a postLoad lifecycle event. Checking and decrypt entities
      * which have @Encrypted annotations
-     * @param LifecycleEventArgs $args
      */
     public function postLoad(LifecycleEventArgs $args)
     {
         $entity = $args->getEntity();
         $em = $args->getEntityManager();
 
-        if (!$this->hasInDecodedRegistry($entity)) {
+        if (! $this->hasInDecodedRegistry($entity)) {
             if ($this->processFields($entity, $em, false)) {
                 $this->addToDecodedRegistry($entity);
             }
@@ -175,19 +167,14 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      */
     public function getSubscribedEvents()
     {
-        return array(
+        return [
             Events::postLoad,
             Events::onFlush,
             Events::postFlush,
-        );
+        ];
     }
 
-    /**
-     * Capitalize string
-     * @param string $word
-     * @return string
-     */
-    public static function capitalize($word)
+    public static function capitalize(string $word): string
     {
         if (is_array($word)) {
             $word = $word[0];
@@ -198,12 +185,10 @@ class DoctrineEncryptSubscriber implements EventSubscriber
 
     /**
      * Process (encrypt/decrypt) entities fields
+     *
      * @param object $entity Some doctrine entity
-     * @param EntityManager $em
-     * @param bool $isEncryptOperation If true - encrypt, false - decrypt entity
-     * @return bool
      */
-    private function processFields($entity, EntityManager $em, $isEncryptOperation = true)
+    private function processFields($entity, EntityManager $em, $isEncryptOperation = true): bool
     {
         $properties = $this->getEncryptedFields($entity, $em);
 
@@ -212,6 +197,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
 
         foreach ($properties as $refProperty) {
             $value = $refProperty->getValue($entity);
+            $value = $value === null ? '' : $value;
 
             $value = $isEncryptOperation ?
                 $this->encryptor->encrypt($value) :
@@ -219,27 +205,28 @@ class DoctrineEncryptSubscriber implements EventSubscriber
 
             $refProperty->setValue($entity, $value);
 
-            if (!$isEncryptOperation) {
+            if (! $isEncryptOperation) {
                 //we don't want the object to be dirty immediately after reading
                 $unitOfWork->setOriginalEntityProperty($oid, $refProperty->getName(), $value);
             }
         }
 
-        return !empty($properties);
+        return ! empty($properties);
     }
 
     /**
      * Check if we have entity in decoded registry
+     *
      * @param object $entity Some doctrine entity
-     * @return boolean
      */
-    private function hasInDecodedRegistry($entity)
+    private function hasInDecodedRegistry($entity): bool
     {
         return isset($this->decodedRegistry[spl_object_hash($entity)]);
     }
 
     /**
      * Adds entity to decoded registry
+     *
      * @param object $entity Some doctrine entity
      */
     private function addToDecodedRegistry($entity)
@@ -249,8 +236,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
 
 
     /**
-     * @param $entity
-     * @param EntityManager $em
+     * @param bool $entity
      * @return \ReflectionProperty[]
      */
     private function getEncryptedFields($entity, EntityManager $em)
@@ -264,6 +250,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
         $meta = $em->getClassMetadata($className);
 
         $encryptedFields = array();
+
         foreach ($meta->getReflectionProperties() as $refProperty) {
             /** @var \ReflectionProperty $refProperty */
 

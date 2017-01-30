@@ -2,6 +2,7 @@
 
 namespace DoctrineEncrypt\Tests\Subscribers;
 
+use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\EventManager;
 use DoctrineEncrypt\Subscribers\DoctrineEncryptSubscriber;
 use DoctrineEncrypt\Tests\Entity\User;
@@ -11,6 +12,7 @@ use DoctrineEncrypt\Tests\Tool\Rot13Encryptor;
 class DoctrineEncryptSubscriberTest extends BaseTestCaseORM
 {
     const USER = 'DoctrineEncrypt\Tests\Entity\User';
+
     /**
      * @var int
      */
@@ -20,7 +22,7 @@ class DoctrineEncryptSubscriberTest extends BaseTestCaseORM
     {
         $evm = new EventManager();
         $evm->addEventSubscriber(new DoctrineEncryptSubscriber(
-            new \Doctrine\Common\Annotations\AnnotationReader(),
+            new AnnotationReader(),
             new Rot13Encryptor()
         ));
 
