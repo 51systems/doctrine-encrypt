@@ -13,8 +13,6 @@ The package supports the following integrations:
 
 - Laravel
 
-Feel free to send in a pull request to add additional integrations.
-
 ## Installation
 
 ```bash
