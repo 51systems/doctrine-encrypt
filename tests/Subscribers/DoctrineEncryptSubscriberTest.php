@@ -3,6 +3,7 @@
 namespace DoctrineEncrypt\Tests\Subscribers;
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\EventManager;
 use DoctrineEncrypt\Subscribers\DoctrineEncryptSubscriber;
 use DoctrineEncrypt\Tests\Entity\User;
@@ -17,6 +18,11 @@ class DoctrineEncryptSubscriberTest extends BaseTestCaseORM
      * @var int
      */
     private $userId;
+
+    public static function setUpBeforeClass()
+    {
+        AnnotationRegistry::registerLoader('class_exists');
+    }
 
     public function setUp()
     {
