@@ -19,13 +19,10 @@ class DoctrineEncryptSubscriberTest extends BaseTestCaseORM
      */
     private $userId;
 
-    public static function setUpBeforeClass()
-    {
-        AnnotationRegistry::registerLoader('class_exists');
-    }
-
     public function setUp()
     {
+        AnnotationRegistry::registerLoader('class_exists');
+
         $evm = new EventManager();
         $evm->addEventSubscriber(new DoctrineEncryptSubscriber(
             new AnnotationReader(),
@@ -34,6 +31,11 @@ class DoctrineEncryptSubscriberTest extends BaseTestCaseORM
 
         $this->getMockSqliteEntityManager($evm);
         $this->populate();
+    }
+
+    protected function tearDown()
+    {
+        AnnotationRegistry::reset();
     }
 
     public function testReadUnencryptedPassword()
