@@ -162,7 +162,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     }
 
     /**
-     * Realization of EventSubscriber interface method.
+     * {@inheritdoc}
      */
     public function getSubscribedEvents(): array
     {

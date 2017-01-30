@@ -7,7 +7,7 @@ use Illuminate\Contracts\Encryption\Encrypter;
 class LaravelEncryptor implements EncryptorInterface
 {
     /**
-     * @var \Illuminate\Contracts\Encryption\Encrypter
+     * @var Encrypter
      */
     private $encrypter;
 
@@ -17,7 +17,7 @@ class LaravelEncryptor implements EncryptorInterface
     }
 
     /**
-     * Must accept data and return encrypted data.
+     * {@inheritdoc}
      */
     public function encrypt(string $data): string
     {
@@ -25,7 +25,7 @@ class LaravelEncryptor implements EncryptorInterface
     }
 
     /**
-     * Must accept data and return decrypted data.
+     * {@inheritdoc}
      */
     public function decrypt(string $data): string
     {
