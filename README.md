@@ -74,7 +74,7 @@ class Entity
 
 ## License
 
-This bundle is under the MIT license. See the complete license in the bundle.
+This bundle is under [the MIT license](LICENSE.md).
 
 ## Versions
 
