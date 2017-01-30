@@ -4,7 +4,7 @@ php:
   - 7.1
 
 before_script:
-  - composer --prefer-source install
+  - composer install
 
 script:
   - ./vendor/bin/phpunit
