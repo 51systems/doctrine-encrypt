@@ -13,6 +13,10 @@ The package supports the following integrations:
 
 - Laravel
 
+## Upgrading
+
+If you're upgrading from a previous version you can find some help with that in [the upgrading guide](UPGRADING.md).
+
 ## Installation
 
 ```bash
