@@ -5,7 +5,7 @@
     "license": "MIT",
     "description": "Package encrypts and decrypts Doctrine fields through life cycle events.",
     "require": {
-        "php": "^7.1",
+        "php": "^7.0",
         "doctrine/orm": "^2.5"
     },
     "require-dev": {
