@@ -19,7 +19,7 @@ class LaravelEncryptor implements EncryptorInterface
     /**
      * {@inheritdoc}
      */
-    public function encrypt(string $data): string
+    public function encrypt($data)
     {
         return $this->encrypter->encrypt($data);
     }
@@ -27,7 +27,7 @@ class LaravelEncryptor implements EncryptorInterface
     /**
      * {@inheritdoc}
      */
-    public function decrypt(string $data): string
+    public function decrypt($data)
     {
         return $this->encrypter->decrypt($data);
     }
